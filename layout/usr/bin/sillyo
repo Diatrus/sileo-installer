@@ -1,0 +1,51 @@
+#!/bin/bash
+
+/bin/rm -rf /tmp/sileo/
+/bin/rm -rf /tmp/org.coolstar.sileo_0.8b2_iphoneos-arm.deb
+/bin/rm -rf /tmp/sileo.deb
+/bin/rm -rf /tmp/install
+
+echo Downloading Sileo...
+
+/usr/bin/curl -o /tmp/org.coolstar.sileo_0.8b2_iphoneos-arm.deb https://electrarepo64.coolstar.org/debs/org.coolstar.sileo_0.8b2_iphoneos-arm.deb
+
+sleep 1
+
+set -e
+
+echo Extracting Sileo...
+
+/bin/mkdir /tmp/sileo/
+
+/usr/bin/dpkg-deb -R /tmp/org.coolstar.sileo_0.8b2_iphoneos-arm.deb /tmp/sileo/
+
+echo Preparing Sileo for install...
+
+/bin/rm /tmp/sileo/DEBIAN/control
+/bin/rm /tmp/sileo/DEBIAN/postinst
+
+/usr/bin/curl -o /tmp/sileo/DEBIAN/control https://raw.githubusercontent.com/Diatrus/sileo-installer/master/control
+echo "" >> /tmp/sileo/DEBIAN/control
+
+/usr/bin/dpkg-deb -b /tmp/sileo
+
+echo Installing Sileo...
+
+/usr/bin/dpkg -i /tmp/sileo.deb
+
+uicache
+
+
+echo Cleaning up...
+
+/bin/rm -rf /tmp/sileo/
+/bin/rm -rf /tmp/org.coolstar.sileo_0.8b2_iphoneos-arm.deb
+/bin/rm -rf /tmp/sileo.deb
+/bin/rm -rf /tmp/install
+
+/bin/chown root:admin /Applications/Sileo.app/giveMeRoot
+/bin/chmod 4755 /Applications/Sileo.app/giveMeRoot
+
+/usr/bin/apt-get update
+
+echo All done!
