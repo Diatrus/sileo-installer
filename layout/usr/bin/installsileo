@@ -87,7 +87,7 @@ echo Preparing Sileo for install...
 /bin/rm /tmp/sileo/DEBIAN/control
 /bin/rm /tmp/sileo/DEBIAN/postinst
 
-/usr/bin/curl -o /tmp/sileo/DEBIAN/control https://raw.githubusercontent.com/Diatrus/sileo-installer/master/control
+/usr/bin/curl -o /tmp/sileo/DEBIAN/control https://raw.githubusercontent.com/Diatrus/sileo-installer/master/sileo/control
 echo "" >> /tmp/sileo/DEBIAN/control
 
 /usr/bin/dpkg-deb -b /tmp/sileo
