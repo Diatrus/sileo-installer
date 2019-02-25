@@ -1,0 +1,13 @@
+Package: apt7-key
+Version: 1:1.7.2
+Architecture: iphoneos-arm
+Maintainer: Diatrus
+Pre-Depends: dpkg (>= 1.14.25-8)
+Depends: apt7-lib (>= 1.7.0), cy+cpu.arm64
+Conflicts: apt-key
+Replaces: apt (<< 1:0-1), apt7 (<< 0.7.20.2-4), apt-key
+Provides: apt-key
+Section: Packaging
+Priority: standard
+Description: repository encryption key management tool
+Name: APT 1.7 (apt-key)

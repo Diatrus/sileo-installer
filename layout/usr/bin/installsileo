@@ -55,25 +55,15 @@ echo "" >> /tmp/apt/DEBIAN/control
 /usr/bin/dpkg-deb -b /tmp/apt
 
 
-sleep 1
-
-set -e
-
-echo Removing old apt...
-
-dpkg --purge --force-all libapt
-dpkg --purge --force-all libapt-pkg5
-dpkg --purge --force-all libapt-pkg-dev
-dpkg --purge --force-all apt-key
-dpkg --purge --force-all apt1.4
-dpkg --purge --force-all apt
-dpkg --purge --force-all aptitude
-
 echo Installing Electra apt...
 
 /usr/bin/dpkg -i /tmp/aptlib.deb
 /usr/bin/dpkg -i /tmp/aptkey.deb
 /usr/bin/dpkg -i /tmp/apt.deb
+
+sleep 1
+
+set -e
 
 
 echo Extracting Sileo...

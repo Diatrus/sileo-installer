@@ -1,0 +1,13 @@
+Package: apt7
+Version: 1:1.7.2
+Architecture: iphoneos-arm
+Maintainer: Diatrus
+Pre-Depends: dpkg (>= 1.14.25-8)
+Depends: apt7-key, apt7-lib (>= 1.7.0), berkeleydb, cy+cpu.arm64
+Conflicts: apt
+Replaces: apt
+Provides: apt
+Section: Packaging
+Priority: standard
+Description: the advanced packaging tool from Debian
+Name: APT 1.7 Strict

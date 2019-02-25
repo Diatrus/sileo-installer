@@ -1,0 +1,15 @@
+Package: apt7-lib
+Version: 1:1.7.2-sileo
+Architecture: iphoneos-arm
+Essential: yes
+Maintainer: Diatrus
+Pre-Depends: dpkg (>= 1.14.25-8)
+Depends: bzip2, dpkg (>= 1.14.25-9), gnupg, gzip, lzma, cy+cpu.arm64
+Conflicts: apt7-ssl, libapt-pkg5.0, libapt, libapt-pkg-dev
+Breaks: cydia (<< 1.1.10), apt7 (<< 0.7.25.3-7), aptitude (<< 0.4.11.11-6)
+Replaces: libapt-pkg5.0, libapt, apt (<< 1:0-1), apt7 (<< 0.7.20.2-3), apt7-ssl, libapt-pkg-dev
+Provides: apt7-ssl, libapt-pkg (=1.4.8), libapt
+Section: Packaging
+Priority: required
+Description: the advanced packaging library from Debian
+Name: APT 1.7 Strict (lib)
