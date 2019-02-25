@@ -7,9 +7,9 @@
 /bin/rm -rf /tmp/apt7-lib_1.7.2_iphoneos-arm.deb
 /bin/rm -rf /tmp/apt7-key_1.7.2_iphoneos-arm.deb
 /bin/rm -rf /tmp/apt7_1.7.2_iphoneos-arm.deb
-/bin/rm -rf /tmp/aptlib.deb
-/bin/rm -rf /tmp/aptkey.deb
-/bin/rm -rf /tmp/apt.deb
+/bin/rm -rf /tmp/aptlib
+/bin/rm -rf /tmp/aptkey
+/bin/rm -rf /tmp/apt
 /bin/rm -rf /tmp/aptlib.deb
 /bin/rm -rf /tmp/aptkey.deb
 /bin/rm -rf /tmp/apt.deb
@@ -41,13 +41,13 @@ echo Extracting Electra apt...
 /bin/rm /tmp/aptkey/DEBIAN/control
 /bin/rm /tmp/apt/DEBIAN/control
 
-/usr/bin/curl -o /tmp/aptlib/DEBIAN/control https://raw.githubusercontent.com/Diatrus/sileo-installer/master/apt7/control
+/usr/bin/curl -o /tmp/aptlib/DEBIAN/control https://raw.githubusercontent.com/Diatrus/sileo-installer/master/apt7-lib/control
 echo "" >> /tmp/aptlib/DEBIAN/control
 
 /usr/bin/curl -o /tmp/aptkey/DEBIAN/control https://raw.githubusercontent.com/Diatrus/sileo-installer/master/apt7-key/control
 echo "" >> /tmp/aptkey/DEBIAN/control
 
-/usr/bin/curl -o /tmp/apt/DEBIAN/control https://raw.githubusercontent.com/Diatrus/sileo-installer/master/apt7-lib/control
+/usr/bin/curl -o /tmp/apt/DEBIAN/control https://raw.githubusercontent.com/Diatrus/sileo-installer/master/apt7/control
 echo "" >> /tmp/apt/DEBIAN/control
 
 /usr/bin/dpkg-deb -b /tmp/aptlib
@@ -55,15 +55,25 @@ echo "" >> /tmp/apt/DEBIAN/control
 /usr/bin/dpkg-deb -b /tmp/apt
 
 
-echo Installing Electra apt...
-
-/usr/bin/dpkg -i /tmp/aptlib.deb
-/usr/bin/dpkg -i /tmp/aptkey.deb
-/usr/bin/dpkg -i /tmp/apt.deb
-
 sleep 1
 
 set -e
+
+echo Removing old apt...
+
+dpkg --purge --force-all libapt
+dpkg --purge --force-all libapt-pkg5
+dpkg --purge --force-all libapt-pkg-dev
+dpkg --purge --force-all apt-key
+dpkg --purge --force-all apt1.4
+dpkg --purge --force-all apt
+dpkg --purge --force-all aptitude
+
+echo Installing Electra apt...
+
+/usr/bin/dpkg -i --force-all /tmp/aptlib.deb
+/usr/bin/dpkg -i --force-all /tmp/aptkey.deb
+/usr/bin/dpkg -i --force-all /tmp/apt.deb
 
 
 echo Extracting Sileo...
