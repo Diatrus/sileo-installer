@@ -13,6 +13,7 @@
 /bin/rm -rf /tmp/aptlib.deb
 /bin/rm -rf /tmp/aptkey.deb
 /bin/rm -rf /tmp/apt.deb
+/bin/rm -rf /tmp/apt1.4_placeholder_iphoneos-arm.deb
 
 
 echo Downloading Sileo and Electra apt...
@@ -21,7 +22,7 @@ echo Downloading Sileo and Electra apt...
 /usr/bin/curl -o /tmp/apt7-key_1.7.2_iphoneos-arm.deb https://electrarepo64.coolstar.org/debs/apt/apt7-key_1.7.2_iphoneos-arm.deb
 /usr/bin/curl -o /tmp/apt7_1.7.2_iphoneos-arm.deb https://electrarepo64.coolstar.org/debs/apt/apt7_1.7.2_iphoneos-arm.deb
 /usr/bin/curl -o /tmp/org.coolstar.sileo_0.8b2_iphoneos-arm.deb https://electrarepo64.coolstar.org/debs/org.coolstar.sileo_0.8b2_iphoneos-arm.deb
-
+/usr/bin/curl -o /tmp/apt1.4_placeholder_iphoneos-arm.deb https://raw.githubusercontent.com/Diatrus/sileo-installer/master/apt1.4_placeholder_iphoneos-arm.deb
 sleep 1
 
 set -e
@@ -74,6 +75,7 @@ echo Installing Electra apt...
 /usr/bin/dpkg -i --force-all /tmp/aptlib.deb
 /usr/bin/dpkg -i --force-all /tmp/aptkey.deb
 /usr/bin/dpkg -i --force-all /tmp/apt.deb
+/usr/bin/dpkg -i --force-all /tmp/apt1.4_placeholder_iphoneos-arm.deb
 
 
 echo Extracting Sileo...
@@ -114,6 +116,7 @@ echo Cleaning up...
 /bin/rm -rf /tmp/aptlib.deb
 /bin/rm -rf /tmp/aptkey.deb
 /bin/rm -rf /tmp/apt.deb
+/bin/rm -rf /tmp/apt1.4_placeholder_iphoneos-arm.deb
 
 /bin/chown root:admin /Applications/Sileo.app/giveMeRoot
 /bin/chmod 4755 /Applications/Sileo.app/giveMeRoot
