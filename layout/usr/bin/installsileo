@@ -63,13 +63,13 @@ set -e
 
 echo Removing old apt...
 
-dpkg --purge --force-all libapt
-dpkg --purge --force-all libapt-pkg5
-dpkg --purge --force-all libapt-pkg-dev
-dpkg --purge --force-all apt-key
-dpkg --purge --force-all apt1.4
-dpkg --purge --force-all apt
-dpkg --purge --force-all aptitude
+/usr/bin/dpkg --purge --force-all libapt
+/usr/bin/dpkg --purge --force-all libapt-pkg5
+/usr/bin/dpkg --purge --force-all libapt-pkg-dev
+/usr/bin/dpkg --purge --force-all apt-key
+/usr/bin/dpkg --purge --force-all apt1.4
+/usr/bin/dpkg --purge --force-all apt
+/usr/bin/dpkg --purge --force-all aptitude
 
 echo Installing Electra apt...
 
@@ -93,8 +93,12 @@ echo Preparing Sileo for install...
 /usr/bin/curl -o /tmp/sileo/DEBIAN/control https://raw.githubusercontent.com/Diatrus/sileo-installer/master/sileo/control
 echo "" >> /tmp/sileo/DEBIAN/control
 
-/usr/bin/dpkg-deb -b /tmp/sileo
+/usr/bin/curl -o /tmp/sileo/DEBIAN/postinst https://raw.githubusercontent.com/Diatrus/sileo-installer/master/sileo/postinst
+/bin/chmod 0755 /tmp/sileo/DEBIAN/postinst
 
+echo -e "interest /usr/lib/tweaks\ninterest /Library/MobileSubstrate/DynamicLibraries" >> /tmp/sileo/DEBIAN/triggers
+
+/usr/bin/dpkg-deb -b /tmp/sileo
 
 echo Installing Sileo...
 
