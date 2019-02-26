@@ -1,4 +1,4 @@
-Package: cc.cuulstar.sileo
+Package: org.coolstar.sileo
 Section: Packaging
 Maintainer: CoolStar <coolstarorganization@gmail.com>
 Architecture: iphoneos-arm
