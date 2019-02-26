@@ -2,7 +2,7 @@ Package: org.coolstar.sileo
 Section: Packaging
 Maintainer: CoolStar <coolstarorganization@gmail.com>
 Architecture: iphoneos-arm
-Version: 0.8b2
+Version: 0.8b3
 SileoDepiction: https://coolstar.moe/sileoassets/depictionoverride.php?package=org.coolstar.sileo
 Depends: apt7 (>= 1.7.0), apt7-lib (>= 1.7.0-sileo), apt7-key (>= 1.7.0), dpkg (>= 1.18.11), cydia (>= 1.1.32~b1), cy+cpu.arm64
 Conflicts: cydia-gui (<= 1.1.30-3)
