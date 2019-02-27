@@ -56,7 +56,6 @@ echo "" >> /tmp/apt/DEBIAN/control
 /usr/bin/dpkg-deb -b /tmp/aptkey
 /usr/bin/dpkg-deb -b /tmp/apt
 
-
 sleep 1
 
 set -e
@@ -95,6 +94,9 @@ echo "" >> /tmp/sileo/DEBIAN/control
 
 /usr/bin/curl -o /tmp/sileo/DEBIAN/postinst https://raw.githubusercontent.com/Diatrus/sileo-installer/master/sileo/postinst
 /bin/chmod 0755 /tmp/sileo/DEBIAN/postinst
+
+/usr/bin/curl -o /tmp/sileo/DEBIAN/prerm https://raw.githubusercontent.com/Diatrus/sileo-installer/master/sileo/prerm
+/bin/chmod 0755 /tmp/sileo/DEBIAN/prerm
 
 echo -e "interest /usr/lib/tweaks\ninterest /Library/MobileSubstrate/DynamicLibraries" >> /tmp/sileo/DEBIAN/triggers
 
