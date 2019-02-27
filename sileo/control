@@ -1,6 +1,6 @@
-Package: org.coolstar.sileo
+Package: org.juulstar.sileo
 Section: Packaging
-Maintainer: CoolStar <coolstarorganization@gmail.com>
+Maintainer: Diatrus
 Architecture: iphoneos-arm
 Version: 0.8b3
 SileoDepiction: https://coolstar.moe/sileoassets/depictionoverride.php?package=org.coolstar.sileo
@@ -8,5 +8,5 @@ Depends: apt7 (>= 1.7.0), apt7-lib (>= 1.7.0-sileo), apt7-key (>= 1.7.0), dpkg (
 Conflicts: cydia-gui (<= 1.1.30-3)
 Pre-Depends: debianutils, dpkg (>= 1.14.25-8)
 Description: A proper APT client for iOS 11 and higher. (View this package in Sileo to see the full depiction)
-Name: Sileo (Beta)
+Name: Sileo (Beta) [unc0ver]
 Author: Sileo Team <getsileoapp@gmail.com>
