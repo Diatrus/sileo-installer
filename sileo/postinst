@@ -29,7 +29,7 @@ then
 	echo "Installed unc0ver Repo"
 	sed -i '1s;^;Types: deb\nURIs: https://apt.bingner.com/\nSuites: ./\nComponents:\n\n;' /etc/apt/sources.list.d/sileo.sources
 fi
-if ! grep -Fxq "URIs: https://apt.bingner.com/" /etc/apt/sources.list.d/sileo.sources ;
+if ! grep -Fxq "URIs: https://repo.nepeta.me/" /etc/apt/sources.list.d/sileo.sources ;
 then
 	echo "Installed Nepeta's Repo"
 	sed -i '1s;^;Types: deb\nURIs: https://repo.nepeta.me/\nSuites: ./\nComponents:\n\n;' /etc/apt/sources.list.d/sileo.sources
