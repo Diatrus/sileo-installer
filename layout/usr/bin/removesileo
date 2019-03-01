@@ -1,0 +1,49 @@
+#!/bin/bash
+
+/bin/rm -rf /tmp/libapt-pkg5.0_1.4.8-4_iphoneos-arm.deb
+/bin/rm -rf /tmp/libapt_1.4.8-7_iphoneos-arm.deb
+/bin/rm -rf /tmp/apt-key_1.4.8-3_iphoneos-arm.deb
+/bin/rm -rf /tmp/apt1.4_1.4.8-3_iphoneos-arm.deb
+
+
+echo Downloading unc0ver apt...
+
+/usr/bin/curl -o /tmp/apt1.4_1.4.8-3_iphoneos-arm.deb https://apt.bingner.com/debs/1443.00/apt1.4_1.4.8-3_iphoneos-arm.deb
+/usr/bin/curl -o /tmp/libapt_1.4.8-7_iphoneos-arm.deb https://apt.bingner.com/debs/1443.00/libapt_1.4.8-7_iphoneos-arm.deb
+/usr/bin/curl -o /tmp/libapt-pkg5.0_1.4.8-4_iphoneos-arm.deb https://apt.bingner.com/debs/1443.00/libapt-pkg5.0_1.4.8-4_iphoneos-arm.deb
+/usr/bin/curl -o /tmp/apt-key_1.4.8-3_iphoneos-arm.deb https://apt.bingner.com/debs/1443.00/apt-key_1.4.8-3_iphoneos-arm.deb
+
+sleep 1
+
+set -e
+
+echo Removing Electra apt and Sileo...
+
+/usr/bin/dpkg --purge --force-all libapt
+/usr/bin/dpkg --purge --force-all apt1.4
+/usr/bin/dpkg --purge --force-all apt7-lib
+/usr/bin/dpkg --purge --force-all apt7
+/usr/bin/dpkg --purge --force-all apt7-key
+/usr/bin/dpkg --purge --force-all org.juulstar.Sileo
+
+rm -f /etc/apt/sources.d.list/Sileo.sources
+
+echo Installing unc0ver apt...
+
+/usr/bin/dpkg -i --force-all /tmp/libapt-pkg5.0_1.4.8-4_iphoneos-arm.deb
+/usr/bin/dpkg -i --force-all /tmp/libapt_1.4.8-7_iphoneos-arm.deb
+/usr/bin/dpkg -i --force-all /tmp/apt-key_1.4.8-3_iphoneos-arm.deb
+/usr/bin/dpkg -i --force-all /tmp/apt1.4_1.4.8-3_iphoneos-arm.deb
+
+echo Success my friend
+
+echo Cleaning up...
+
+/bin/rm -rf /tmp/libapt-pkg5.0_1.4.8-4_iphoneos-arm.deb
+/bin/rm -rf /tmp/libapt_1.4.8-7_iphoneos-arm.deb
+/bin/rm -rf /tmp/apt-key_1.4.8-3_iphoneos-arm.deb
+/bin/rm -rf /tmp/apt1.4_1.4.8-3_iphoneos-arm.deb
+
+/usr/bin/apt-get update
+
+echo All done!

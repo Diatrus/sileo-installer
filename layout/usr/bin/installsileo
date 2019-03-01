@@ -60,17 +60,16 @@ sleep 1
 
 set -e
 
-echo Removing old apt...
+echo Removing Electra apt...
 
 /usr/bin/dpkg --purge --force-all libapt
-/usr/bin/dpkg --purge --force-all libapt-pkg5
-/usr/bin/dpkg --purge --force-all libapt-pkg-dev
-/usr/bin/dpkg --purge --force-all apt-key
 /usr/bin/dpkg --purge --force-all apt1.4
 /usr/bin/dpkg --purge --force-all apt
-/usr/bin/dpkg --purge --force-all aptitude
+/usr/bin/dpkg --purge --force-all apt7-lib
+/usr/bin/dpkg --purge --force-all apt7
+/usr/bin/dpkg --purge --force-all apt7-key
 
-echo Installing Electra apt...
+echo Installing unc0ver apt...
 
 /usr/bin/dpkg -i --force-all /tmp/aptlib.deb
 /usr/bin/dpkg -i --force-all /tmp/aptkey.deb

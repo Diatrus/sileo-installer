@@ -1,6 +1,4 @@
 #!/bin/bash
-rm -f /etc/apt/sources.list.d/sileo.sources
-
 function finish() {
 	f="${1}"
 
