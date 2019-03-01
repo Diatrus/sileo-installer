@@ -15,6 +15,8 @@
 /bin/rm -rf /tmp/apt.deb
 /bin/rm -rf /tmp/apt1.4_placeholder_iphoneos-arm.deb
 /bin/rm -rf /tmp/libapt_placeholder_iphoneos-arm.deb
+sed -i "" '/electrarepo64/d' /etc/hosts
+
 
 echo Downloading Sileo and Electra apt...
 
@@ -104,6 +106,7 @@ echo -e "interest /usr/lib/tweaks\ninterest /Library/MobileSubstrate/DynamicLibr
 echo Installing Sileo...
 
 /usr/bin/dpkg -i /tmp/sileo.deb
+echo -e "\n0.0.0.0 electrarepo64.coolstar.org\n::1 electrarepo64.coolstar.org\n" >> /etc/hosts
 
 uicache
 
