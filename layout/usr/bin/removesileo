@@ -44,7 +44,7 @@ echo Cleaning up...
 /bin/rm -rf /tmp/libapt_1.4.8-7_iphoneos-arm.deb
 /bin/rm -rf /tmp/apt-key_1.4.8-3_iphoneos-arm.deb
 /bin/rm -rf /tmp/apt1.4_1.4.8-3_iphoneos-arm.deb
-
+/bin/rm -f /etc/apt/sources.list.d/sileo.sources
 /usr/bin/apt-get update
 
 echo All done!
