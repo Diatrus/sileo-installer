@@ -1,9 +1,9 @@
 Package: com.diatrus.sileo-installer
 Name: Sileo for unc0ver
 Depends: curl
-Version: 0.4
+Version: 0.5
 Architecture: iphoneos-arm
-Description: Safely install official Sileo on unc0ver. Run the command "installsileo" over ssh or MTerminal to install.
+Description: Safely install official Sileo on unc0ver. Run the command "installsileo" over ssh or MTerminal to install. For it to work properly, rejailbreak with Reload System Daemons turned on after installing.
 Maintainer: Diatrus
 Author: Diatrus
 Section: Utilities
