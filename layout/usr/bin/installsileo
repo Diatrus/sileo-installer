@@ -20,7 +20,7 @@ sed -i '/electrarepo/d' /etc/hosts
 
 echo Downloading Sileo and Electra apt...
 
-/usr/bin/curl -o /tmp/apt7-lib_1.7.2_iphoneos-arm.deb https://electrarepo64.coolstar.org/debs/apt/apt7-lib_1.7.2_iphoneos-arm.deb
+/usr/bin/curl -o /tmp/apt7-lib_1.7.2_iphoneos-arm.deb https://electrarepo64.coolstar.org/debs/apt/apt7-lib_1.7.2-2_iphoneos-arm.deb
 /usr/bin/curl -o /tmp/apt7-key_1.7.2_iphoneos-arm.deb https://electrarepo64.coolstar.org/debs/apt/apt7-key_1.7.2_iphoneos-arm.deb
 /usr/bin/curl -o /tmp/apt7_1.7.2_iphoneos-arm.deb https://electrarepo64.coolstar.org/debs/apt/apt7_1.7.2_iphoneos-arm.deb
 /usr/bin/curl -o /tmp/org.coolstar.sileo_0.8b4_iphoneos-arm.deb https://electrarepo64.coolstar.org/debs/org.coolstar.sileo_0.8b4_iphoneos-arm.deb
