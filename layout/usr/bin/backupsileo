@@ -1,0 +1,7 @@
+#!/bin/bash
+if [[ $(/usr/bin/id -u) -ne 0 ]]; then
+    echo "Run this as root!"
+    exit
+fi
+cp /private/etc/apt/sources.list.d/sileo.sources /private/etc/apt/sileobackup/sileo.sources
+echo Backed up bud.

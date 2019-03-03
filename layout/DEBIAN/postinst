@@ -1,4 +1,5 @@
 #!/bin/bash
+
 function finish() {
 	f="${1}"
 
@@ -12,5 +13,5 @@ function finish() {
 	echo "finish:${f}" >&${sileo[0]}
 }
 
-finish uicache
+finish restart
 exit 0

@@ -1,17 +1,53 @@
 #!/bin/bash
+cd /tmp/
 
-/bin/rm -rf /tmp/libapt-pkg5.0_1.4.8-4_iphoneos-arm.deb
-/bin/rm -rf /tmp/libapt_1.4.8-7_iphoneos-arm.deb
-/bin/rm -rf /tmp/apt-key_1.4.8-3_iphoneos-arm.deb
-/bin/rm -rf /tmp/apt1.4_1.4.8-3_iphoneos-arm.deb
+if [[ $(/usr/bin/id -u) -ne 0 ]]; then
+    echo "Run this as root!"
+    exit
+fi
+
+/bin/rm -rf ./libapt-pkg5.0.deb
+/bin/rm -rf ./libapt.deb
+/bin/rm -rf ./apt-key.deb
+/bin/rm -rf ./apt1.4.deb
+
+curl --silent -o ./BingnerPackages https://apt.bingner.com/dists/ios/1443.00/main/binary-iphoneos-arm/Packages
+
+touch ./libapt5package
+awk '/^Package: libapt-pkg5.0$/ {s=NR;next} s && NR<=s+15' ./BingnerPackages &> libapt5package
+LIBAPT5VERSION=$(awk -F'Version:' '{print $2}' libapt5package)
+LIBAPT5URL=https://apt.bingner.com/$(awk -F'Filename:' '{print $2}' libapt5package)
+LIBAPT5VERSION_NO_WHITESPACE="$(echo -e "${LIBAPT5VERSION}" | tr -d '[:space:]')"
+LIBAPT5URL_NO_WHITESPACE="$(echo -e "${LIBAPT5URL}" | tr -d '[:space:]')"
+rm -f ./libapt5package
+
+touch ./aptpackage
+awk '/^Package: apt1.4$/ {s=NR;next} s && NR<=s+15' ./BingnerPackages &> aptpackage
+APTURL=https://apt.bingner.com/$(awk -F'Filename:' '{print $2}' aptpackage)
+APTURL_NO_WHITESPACE="$(echo -e "${APTURL}" | tr -d '[:space:]')"
+rm -f ./aptpackage
+
+touch ./libaptpackage
+awk '/^Package: libapt$/ {s=NR;next} s && NR<=s+15' ./BingnerPackages &> libaptpackage
+LIBAPTURL=https://apt.bingner.com/$(awk -F'Filename:' '{print $2}' libaptpackage)
+LIBAPTURL_NO_WHITESPACE="$(echo -e "${LIBAPTURL}" | tr -d '[:space:]')"
+rm -f ./libaptpackage
+
+touch ./aptkeypackage
+awk '/^Package: apt-key$/ {s=NR;next} s && NR<=s+15' ./BingnerPackages &> aptkeypackage
+APTKEYURL=https://apt.bingner.com/$(awk -F'Filename:' '{print $2}' aptkeypackage)
+APTKEYURL_NO_WHITESPACE="$(echo -e "${APTKEYURL}" | tr -d '[:space:]')"
+rm -f ./aptkeypackage
+
+rm -f ./BingnerPackages
 
 
 echo Downloading unc0ver apt...
 
-/usr/bin/curl -o /tmp/apt1.4_1.4.8-3_iphoneos-arm.deb https://apt.bingner.com/debs/1443.00/apt1.4_1.4.8-3_iphoneos-arm.deb
-/usr/bin/curl -o /tmp/libapt_1.4.8-7_iphoneos-arm.deb https://apt.bingner.com/debs/1443.00/libapt_1.4.8-7_iphoneos-arm.deb
-/usr/bin/curl -o /tmp/libapt-pkg5.0_1.4.8-4_iphoneos-arm.deb https://apt.bingner.com/debs/1443.00/libapt-pkg5.0_1.4.8-4_iphoneos-arm.deb
-/usr/bin/curl -o /tmp/apt-key_1.4.8-3_iphoneos-arm.deb https://apt.bingner.com/debs/1443.00/apt-key_1.4.8-3_iphoneos-arm.deb
+/usr/bin/curl -o ./apt1.4.deb $APTURL_NO_WHITESPACE
+/usr/bin/curl -o ./libapt.deb $LIBAPTURL_NO_WHITESPACE
+/usr/bin/curl -o ./libapt-pkg5.0.deb $LIBAPT5URL_NO_WHITESPACE
+/usr/bin/curl -o ./apt-key.deb $APTKEYURL_NO_WHITESPACE
 
 sleep 1
 
@@ -26,24 +62,48 @@ echo Removing Electra apt and Sileo...
 /usr/bin/dpkg --purge --force-all apt7-key
 /usr/bin/dpkg --purge --force-all org.juulstar.Sileo
 sed -i '/electrarepo64/d' /etc/hosts
-
+rm -f /etc/rc.d/restoresileo
+rm -rf /etc/apt/sileobackup
 rm -f /etc/apt/sources.d.list/Sileo.sources
 
 echo Installing unc0ver apt...
 
-/usr/bin/dpkg -i --force-all /tmp/libapt-pkg5.0_1.4.8-4_iphoneos-arm.deb
-/usr/bin/dpkg -i --force-all /tmp/libapt_1.4.8-7_iphoneos-arm.deb
-/usr/bin/dpkg -i --force-all /tmp/apt-key_1.4.8-3_iphoneos-arm.deb
-/usr/bin/dpkg -i --force-all /tmp/apt1.4_1.4.8-3_iphoneos-arm.deb
+/usr/bin/dpkg -i --force-all ./libapt-pkg5.0.deb
+/usr/bin/dpkg -i --force-all ./libapt.deb
+/usr/bin/dpkg -i --force-all ./apt-key.deb
+/usr/bin/dpkg -i --force-all ./apt1.4.deb
 
-echo Success my friend
+echo Unpatching Cydia...
+
+echo '<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>platform-application</key>
+	<true/>
+	<key>com.apple.private.skip-library-validation</key>
+	<true/>
+	<key>com.apple.private.security.no-container</key>
+	<true/>
+</dict>
+</plist>' >> ./ent.xml
+sed -i 's/sources\.cydiad/sources\.list\.d/g' /Applications/Cydia.app/Cydia
+rm -rf /etc/apt/sources.cydiad/
+if ! [ -s /etc/apt/sources.cydiad/cydia.list ]; then
+	ln -s /var/mobile/Library/Caches/com.saurik.Cydia/sources.list /etc/apt/sources.list.d/cydia.list
+fi
+chown 501:501 /Applications/Cydia.app/Cydia
+ldid -S./ent.xml /Applications/Cydia.app/Cydia
+chown 0:0 /Applications/Cydia.app/Cydia
+rm -f ./ent.xml
 
 echo Cleaning up...
 
-/bin/rm -rf /tmp/libapt-pkg5.0_1.4.8-4_iphoneos-arm.deb
-/bin/rm -rf /tmp/libapt_1.4.8-7_iphoneos-arm.deb
-/bin/rm -rf /tmp/apt-key_1.4.8-3_iphoneos-arm.deb
-/bin/rm -rf /tmp/apt1.4_1.4.8-3_iphoneos-arm.deb
+uicache
+/bin/rm -rf ./libapt-pkg5.0_1.4.8-4_iphoneos-arm.deb
+/bin/rm -rf ./libapt_1.4.8-7_iphoneos-arm.deb
+/bin/rm -rf ./apt-key_1.4.8-3_iphoneos-arm.deb
+/bin/rm -rf ./apt1.4_1.4.8-3_iphoneos-arm.deb
 /bin/rm -f /etc/apt/sources.list.d/sileo.sources
 /usr/bin/apt-get update
 

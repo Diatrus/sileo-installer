@@ -1,137 +1,325 @@
 #!/bin/bash
+cd /tmp/
 
-/bin/rm -rf /tmp/sileo/
-/bin/rm -rf /tmp/org.coolstar.sileo_0.8b4_iphoneos-arm.deb
-/bin/rm -rf /tmp/sileo.deb
-/bin/rm -rf /tmp/install
-/bin/rm -rf /tmp/apt7-lib_1.7.2_iphoneos-arm.deb
-/bin/rm -rf /tmp/apt7-key_1.7.2_iphoneos-arm.deb
-/bin/rm -rf /tmp/apt7_1.7.2_iphoneos-arm.deb
-/bin/rm -rf /tmp/aptlib
-/bin/rm -rf /tmp/aptkey
-/bin/rm -rf /tmp/apt
-/bin/rm -rf /tmp/aptlib.deb
-/bin/rm -rf /tmp/aptkey.deb
-/bin/rm -rf /tmp/apt.deb
-/bin/rm -rf /tmp/apt1.4_placeholder_iphoneos-arm.deb
-/bin/rm -rf /tmp/libapt_placeholder_iphoneos-arm.deb
+if [[ $(/usr/bin/id -u) -ne 0 ]]; then
+    echo "Run this as root!"
+    exit
+fi
+
+#Remove old leftovers if any
+rm -rf ./sileo/
+rm -rf ./sileo_old.deb
+rm -rf ./sileo.deb
+rm -rf ./install
+rm -rf ./apt7-lib.deb
+rm -rf ./apt7-key.deb
+rm -rf ./apt7.deb
+rm -rf ./aptlib
+rm -rf ./aptkey
+rm -rf ./apt
+rm -rf ./aptlib.deb
+rm -rf ./aptkey.deb
+rm -rf ./apt.deb
+rm -rf ./apt1.4_placeholder.deb
+rm -rf ./libapt_placeholder.deb
+rm -f ./ent.xml
+
+#Make sure electrarepo isn't blocked
 sed -i '/electrarepo/d' /etc/hosts
 
+#Find required packages URL and versions
 
-echo Downloading Sileo and Electra apt...
+curl --silent -o ./ElectraPackages https://electrarepo64.coolstar.org/Packages
 
-/usr/bin/curl -o /tmp/apt7-lib_1.7.2_iphoneos-arm.deb https://electrarepo64.coolstar.org/debs/apt/apt7-lib_1.7.2_iphoneos-arm.deb
-/usr/bin/curl -o /tmp/apt7-key_1.7.2_iphoneos-arm.deb https://electrarepo64.coolstar.org/debs/apt/apt7-key_1.7.2_iphoneos-arm.deb
-/usr/bin/curl -o /tmp/apt7_1.7.2_iphoneos-arm.deb https://electrarepo64.coolstar.org/debs/apt/apt7_1.7.2_iphoneos-arm.deb
-/usr/bin/curl -o /tmp/org.coolstar.sileo_0.8b4_iphoneos-arm.deb https://electrarepo64.coolstar.org/debs/org.coolstar.sileo_0.8b4_iphoneos-arm.deb
-/usr/bin/curl -o /tmp/apt1.4_placeholder_iphoneos-arm.deb https://raw.githubusercontent.com/Diatrus/sileo-installer/master/apt1.4/apt1.4_placeholder_iphoneos-arm.deb
-/usr/bin/curl -o /tmp/libapt_placeholder_iphoneos-arm.deb https://raw.githubusercontent.com/Diatrus/sileo-installer/master/apt1.4/libapt_placeholder_iphoneos-arm.deb
+touch ./sileopackage
+awk '/^Package: org.coolstar.sileo$/ {s=NR;next} s && NR<=s+15' ./ElectraPackages &> sileopackage
+SILEOVERSION=$(awk -F'Version:' '{print $2}' sileopackage)
+SILEOURL=https://electrarepo64.coolstar.org/$(awk -F'Filename:' '{print $2}' sileopackage)
+SILEOVERSION_NO_WHITESPACE="$(echo -e "${SILEOVERSION}" | tr -d '[:space:]')"
+SILEOURL_NO_WHITESPACE="$(echo -e "${SILEOURL}" | tr -d '[:space:]')"
+rm -f ./sileopackage
+
+touch ./apt7package
+awk '/^Package: apt7$/ {s=NR;next} s && NR<=s+15' ./ElectraPackages &> apt7package
+APT7VERSION=$(awk -F'Version:' '{print $2}' apt7package)
+APT7URL=https://electrarepo64.coolstar.org/$(awk -F'Filename:' '{print $2}' apt7package)
+APT7VERSION_NO_WHITESPACE="$(echo -e "${APT7VERSION}" | tr -d '[:space:]')"
+APT7URL_NO_WHITESPACE="$(echo -e "${APT7URL}" | tr -d '[:space:]')"
+rm -f ./apt7package
+
+touch ./apt7libpackage
+awk '/^Package: apt7-lib$/ {s=NR;next} s && NR<=s+15' ./ElectraPackages &> apt7libpackage
+APT7LIBVERSION=$(awk -F'Version:' '{print $2}' apt7libpackage)
+APT7LIBURL=https://electrarepo64.coolstar.org/$(awk -F'Filename:' '{print $2}' apt7libpackage)
+APT7LIBVERSION_NO_WHITESPACE="$(echo -e "${APT7LIBVERSION}" | tr -d '[:space:]')"
+APT7LIBURL_NO_WHITESPACE="$(echo -e "${APT7LIBURL}" | tr -d '[:space:]')"
+rm -f ./apt7libpackage
+
+touch ./apt7keypackage
+awk '/^Package: apt7-key$/ {s=NR;next} s && NR<=s+15' ./ElectraPackages &> apt7keypackage
+APT7KEYVERSION=$(awk -F'Version:' '{print $2}' apt7keypackage)
+APT7KEYURL=https://electrarepo64.coolstar.org/$(awk -F'Filename:' '{print $2}' apt7keypackage)
+APT7KEYVERSION_NO_WHITESPACE="$(echo -e "${APT7KEYVERSION}" | tr -d '[:space:]')"
+APT7KEYURL_NO_WHITESPACE="$(echo -e "${APT7KEYURL}" | tr -d '[:space:]')"
+rm -f ./apt7keypackage
+
+rm -f ./ElectraPackages
+
+sleep 1
+set -e
+
+#Downloads Electra APT and Sileo
+echo Downloading Resources...
+
+curl --silent -o ./apt7-lib.deb $APT7LIBURL_NO_WHITESPACE
+curl --silent -o ./apt7-key.deb $APT7KEYURL_NO_WHITESPACE
+curl --silent -o ./apt7.deb $APT7URL_NO_WHITESPACE
+curl --silent -o ./sileo_old.deb $SILEOURL_NO_WHITESPACE
+curl --silent -o ./apt1.4_placeholder.deb https://raw.githubusercontent.com/Diatrus/sileo-installer/master/apt1.4/apt1.4_placeholder_iphoneos-arm.deb
+curl --silent -o ./libapt_placeholder.deb https://raw.githubusercontent.com/Diatrus/sileo-installer/master/apt1.4/libapt_placeholder_iphoneos-arm.deb
+
+#Extract and repack Electra APT and Sileo
+mkdir ./aptlib
+mkdir ./aptkey
+mkdir ./apt
+
+dpkg-deb -R ./apt7-lib.deb ./aptlib
+dpkg-deb -R ./apt7-key.deb ./aptkey
+dpkg-deb -R ./apt7.deb ./apt
+
+rm -f ./aptlib/DEBIAN/control
+rm -f ./aptkey/DEBIAN/control
+rm -f ./apt/DEBIAN/control
+
+#Adds modified control files
+echo 'Package: apt7-lib
+Version: 1:'$APT7LIBVERSION_NO_WHITESPACE'
+Architecture: iphoneos-arm
+Essential: yes
+Maintainer: Diatrus
+Pre-Depends: dpkg (>= 1.14.25-8)
+Depends: bzip2, dpkg (>= 1.14.25-9), gnupg, gzip, lzma, cy+cpu.arm64
+Conflicts: apt7-ssl, libapt-pkg5.0, libapt-pkg-dev
+Breaks: cydia (<< 1.1.10), apt7 (<< 0.7.25.3-7), aptitude (<< 0.4.11.11-6)
+Replaces: libapt-pkg5.0, apt (<< 1:0-1), apt7 (<< 0.7.20.2-3), apt7-ssl, libapt-pkg-dev
+Provides: apt7-ssl, libapt-pkg (=1.4.8)
+Section: Packaging
+Priority: required
+Description: the advanced packaging library from Debian
+Name: APT 1.7 Strict (lib)
+' >> ./aptlib/DEBIAN/control
+
+echo 'Package: apt7-key
+Version: 1:'$APT7KEYVERSION_NO_WHITESPACE'
+Architecture: iphoneos-arm
+Maintainer: Diatrus
+Pre-Depends: dpkg (>= 1.14.25-8)
+Depends: apt7-lib (>= 1.7.0), cy+cpu.arm64
+Conflicts: apt-key
+Replaces: apt (<< 1:0-1), apt7 (<< 0.7.20.2-4), apt-key
+Provides: apt-key
+Section: Packaging
+Priority: standard
+Description: repository encryption key management tool
+Name: APT 1.7 (apt-key)
+' >> ./aptkey/DEBIAN/control
+
+echo 'Package: apt7
+Version: 1:'$APT7VERSION_NO_WHITESPACE'
+Architecture: iphoneos-arm
+Maintainer: Diatrus
+Pre-Depends: dpkg (>= 1.14.25-8)
+Depends: apt7-key, apt7-lib (>= 1.7.0), berkeleydb, cy+cpu.arm64
+Conflicts: apt
+Replaces: apt
+Provides: apt
+Section: Packaging
+Priority: standard
+Description: the advanced packaging tool from Debian
+Name: APT 1.7 Strict
+' >> ./apt/DEBIAN/control
+
+dpkg-deb -b ./aptlib
+dpkg-deb -b ./aptkey
+dpkg-deb -b ./apt
+
 sleep 1
 
 set -e
 
+#Remove traces of unc0ver APT
+echo Removing unc0ver APT...
 
-echo Extracting Electra apt...
+dpkg --purge --force-all libapt
+dpkg --purge --force-all apt1.4
+dpkg --purge --force-all apt
+dpkg --purge --force-all apt7-lib
+dpkg --purge --force-all apt7
+dpkg --purge --force-all apt7-key
 
-/bin/mkdir /tmp/aptlib
-/bin/mkdir /tmp/aptkey
-/bin/mkdir /tmp/apt
+#Install APT 1.7
+echo Installing Electra APT...
 
-/usr/bin/dpkg-deb -R /tmp/apt7-lib_1.7.2_iphoneos-arm.deb /tmp/aptlib
-/usr/bin/dpkg-deb -R /tmp/apt7-key_1.7.2_iphoneos-arm.deb /tmp/aptkey
-/usr/bin/dpkg-deb -R /tmp/apt7_1.7.2_iphoneos-arm.deb /tmp/apt
+dpkg -i --force-all ./aptlib.deb
+dpkg -i --force-all ./aptkey.deb
+dpkg -i --force-all ./apt.deb
+dpkg -i --force-all ./apt1.4_placeholder.deb
+dpkg -i --force-all ./libapt_placeholder.deb
 
-/bin/rm /tmp/aptlib/DEBIAN/control
-/bin/rm /tmp/aptkey/DEBIAN/control
-/bin/rm /tmp/apt/DEBIAN/control
+#Change Sileo depends and such
+echo Preparing Sileo...
 
-/usr/bin/curl -o /tmp/aptlib/DEBIAN/control https://raw.githubusercontent.com/Diatrus/sileo-installer/master/apt7-lib/control
-echo "" >> /tmp/aptlib/DEBIAN/control
+mkdir ./sileo/
 
-/usr/bin/curl -o /tmp/aptkey/DEBIAN/control https://raw.githubusercontent.com/Diatrus/sileo-installer/master/apt7-key/control
-echo "" >> /tmp/aptkey/DEBIAN/control
+dpkg-deb -R ./sileo_old.deb ./sileo/
 
-/usr/bin/curl -o /tmp/apt/DEBIAN/control https://raw.githubusercontent.com/Diatrus/sileo-installer/master/apt7/control
-echo "" >> /tmp/apt/DEBIAN/control
+rm -f ./sileo/DEBIAN/control
+rm -f ./sileo/DEBIAN/postinst
 
-/usr/bin/dpkg-deb -b /tmp/aptlib
-/usr/bin/dpkg-deb -b /tmp/aptkey
-/usr/bin/dpkg-deb -b /tmp/apt
+echo 'Package: org.juulstar.sileo
+Section: Packaging
+Maintainer: Diatrus
+Architecture: iphoneos-arm
+Version: '$SILEOVERSION_NO_WHITESPACE'
+SileoDepiction: https://coolstar.moe/sileoassets/depictionoverride.php?package=org.coolstar.sileo
+Depends: apt7 (>= 1.7.0), apt7-lib (>= 1.7.0-sileo), apt7-key (>= 1.7.0), dpkg (>= 1.18.11), cydia (>= 1.1.32~b1), cy+cpu.arm64
+Conflicts: cydia-gui (<= 1.1.30-3)
+Pre-Depends: debianutils, dpkg (>= 1.14.25-8)
+Description: A proper APT client for iOS 11 and higher. (View this package in Sileo to see the full depiction)
+Name: Sileo (Beta) [unc0ver]
+Author: Sileo Team <getsileoapp@gmail.com>
+' >> ./sileo/DEBIAN/control
 
-sleep 1
+echo '#!/bin/bash
+rm /etc/apt/sources.list.d/sileo.sources 2> /dev/null || true
+rm /etc/apt/sources.list.d/sileo.list 2> /dev/null || true
+mkdir -p /etc/apt/sileobackup/
+touch /etc/apt/sileobackup/sileo.sources
 
-set -e
+if ! [ -s /etc/apt/sileobackup/sileo.sources ]; then
+	echo -e "" > /etc/apt/sileobackup/sileo.sources
+fi
 
-echo Removing Electra apt...
+if ! grep -Fxq "URIs: https://repounclutter.coolstar.org/" /etc/apt/sileobackup/sileo.sources ;
+then
+	echo "Installed BigBoss+ Repo"
+	sed -i '\''1s;^;Types: deb\nURIs: https://repounclutter.coolstar.org/\nSuites: ./\nComponents:\n\n;'\'' /etc/apt/sileobackup/sileo.sources
+fi
 
-/usr/bin/dpkg --purge --force-all libapt
-/usr/bin/dpkg --purge --force-all apt1.4
-/usr/bin/dpkg --purge --force-all apt
-/usr/bin/dpkg --purge --force-all apt7-lib
-/usr/bin/dpkg --purge --force-all apt7
-/usr/bin/dpkg --purge --force-all apt7-key
+if ! grep -Fxq "URIs: https://repo.chariz.io/" /etc/apt/sileobackup/sileo.sources ;
+then
+	echo "Installed Chariz Repo"
+	sed -i '\''1s;^;Types: deb\nURIs: https://repo.chariz.io/\nSuites: ./\nComponents:\n\n;'\'' /etc/apt/sileobackup/sileo.sources
+fi
 
-echo Installing unc0ver apt...
+if ! grep -Fxq "URIs: https://repo.dynastic.co/" /etc/apt/sileobackup/sileo.sources ;
+then
+	echo "Installed Dynastic Repo"
+	sed -i '\''1s;^;Types: deb\nURIs: https://repo.dynastic.co/\nSuites: ./\nComponents:\n\n;'\'' /etc/apt/sileobackup/sileo.sources
+fi
 
-/usr/bin/dpkg -i --force-all /tmp/aptlib.deb
-/usr/bin/dpkg -i --force-all /tmp/aptkey.deb
-/usr/bin/dpkg -i --force-all /tmp/apt.deb
-/usr/bin/dpkg -i --force-all /tmp/apt1.4_placeholder_iphoneos-arm.deb
-/usr/bin/dpkg -i --force-all /tmp/libapt_placeholder_iphoneos-arm.deb
+if ! grep -Fxq "URIs: https://apt.bingner.com/" /etc/apt/sileobackup/sileo.sources ;
+then
+	echo "Installed unc0ver Repo"
+	sed -i '\''1s;^;Types: deb\nURIs: https://apt.bingner.com/\nSuites: ./\nComponents:\n\n;'\'' /etc/apt/sileobackup/sileo.sources
+fi
+if ! grep -Fxq "URIs: https://repo.nepeta.me/" /etc/apt/sileobackup/sileo.sources ;
+then
+	echo "Installed Nepeta'\''s Repo"
+	sed -i '\''1s;^;Types: deb\nURIs: https://repo.nepeta.me/\nSuites: ./\nComponents:\n\n;'\'' /etc/apt/sileobackup/sileo.sources
+fi
+if ! grep -Fxq "URIs: https://diatrus.github.io/sileo/" /etc/apt/sileobackup/sileo.sources ;
+then
+	echo "Installed Sileo Installer Repo"
+	sed -i '\''1s;^;Types: deb\nURIs: https://diatrus.github.io/sileo/\nSuites: ./\nComponents:\n\n;'\'' /etc/apt/sileobackup/sileo.sources
+fi
+function finish() {
+        f="${1}"
 
+        # No control fd: bail out
+        [[ -z "${f}" || -z "${SILEO}" ]] && return
+        sileo=(${SILEO})
 
-echo Extracting Sileo...
+        # Sileo control fd version < 1: bail out
+        [[ ${sileo[1]} -ge 1 ]] || return
 
-/bin/mkdir /tmp/sileo/
+        echo "finish:${f}" >&${sileo[0]}
+}
 
-/usr/bin/dpkg-deb -R /tmp/org.coolstar.sileo_0.8b4_iphoneos-arm.deb /tmp/sileo/
+finish uicache
+exit 0
+' >> ./sileo/DEBIAN/postinst
+chmod 0755 ./sileo/DEBIAN/postinst
 
-echo Preparing Sileo for install...
+dpkg-deb -b ./sileo
 
-/bin/rm /tmp/sileo/DEBIAN/control
-
-/usr/bin/curl -o /tmp/sileo/DEBIAN/control https://raw.githubusercontent.com/Diatrus/sileo-installer/master/sileo/control
-echo "" >> /tmp/sileo/DEBIAN/control
-
-/usr/bin/curl -o /tmp/sileo/DEBIAN/postinst https://raw.githubusercontent.com/Diatrus/sileo-installer/master/sileo/postinst
-/bin/chmod 0755 /tmp/sileo/DEBIAN/postinst
-
-/usr/bin/curl -o /tmp/sileo/DEBIAN/prerm https://raw.githubusercontent.com/Diatrus/sileo-installer/master/sileo/prerm
-/bin/chmod 0755 /tmp/sileo/DEBIAN/prerm
-
-echo -e "interest /usr/lib/tweaks\ninterest /Library/MobileSubstrate/DynamicLibraries" >> /tmp/sileo/DEBIAN/triggers
-
-/usr/bin/dpkg-deb -b /tmp/sileo
-
+#Installs Sileo and blocks electrarepo via hosts for now
 echo Installing Sileo...
 
-/usr/bin/dpkg -i /tmp/sileo.deb
+dpkg -i ./sileo.deb
 echo -e "\n0.0.0.0 electrarepo64.coolstar.org\n\n::1 electrarepo64.coolstar.org\n" >> /etc/hosts
 
 uicache
 
+#Fixes translation error in Cydia :)
+echo Patching Cydia...
 
-echo Cleaning up...
+echo '<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>platform-application</key>
+	<true/>
+	<key>com.apple.private.skip-library-validation</key>
+	<true/>
+	<key>com.apple.private.security.no-container</key>
+	<true/>
+</dict>
+</plist>' >> ./ent.xml
+sed -i 's/sources\.list\.d/sources\.cydiad/g' /Applications/Cydia.app/Cydia
+mkdir -p /etc/apt/sources.cydiad/
+if ! [ -s /etc/apt/sources.cydiad/cydia.list ]; then
+	ln -s /var/mobile/Library/Caches/com.saurik.Cydia/sources.list /etc/apt/sources.cydiad/cydia.list
+fi
+rm -f /etc/apt/sources.list.d/cydia.list
+chown 501:501 /Applications/Cydia.app/Cydia
+ldid -S./ent.xml /Applications/Cydia.app/Cydia
+chown 0:0 /Applications/Cydia.app/Cydia
 
-/bin/rm -rf /tmp/sileo/
-/bin/rm -rf /tmp/org.coolstar.sileo_0.8b4_iphoneos-arm.deb
-/bin/rm -rf /tmp/sileo.deb
-/bin/rm -rf /tmp/install
-/bin/rm -rf /tmp/apt7-lib_1.7.2_iphoneos-arm.deb
-/bin/rm -rf /tmp/apt7-key_1.7.2_iphoneos-arm.deb
-/bin/rm -rf /tmp/apt7_1.7.2_iphoneos-arm.deb
-/bin/rm -rf /tmp/aptlib.deb
-/bin/rm -rf /tmp/aptkey.deb
-/bin/rm -rf /tmp/apt.deb
-/bin/rm -rf /tmp/aptlib.deb
-/bin/rm -rf /tmp/aptkey.deb
-/bin/rm -rf /tmp/apt.deb
-/bin/rm -rf /tmp/apt1.4_placeholder_iphoneos-arm.deb
-/bin/rm -rf /tmp/libapt_placeholder_iphoneos-arm.deb
+#Create script to restore backed-up sources on rejailbreak
+echo Creating Sileo source deletion workaround \(Unc0ver is a lil bitch\)
 
-/bin/chown root:admin /Applications/Sileo.app/giveMeRoot
-/bin/chmod 4755 /Applications/Sileo.app/giveMeRoot
+cp /private/etc/apt/sileobackup/sileo.sources /private/etc/apt/sources.list.d/sileo.sources
+touch /private/etc/rc.d/restoresileo
+echo '#!/bin/bash
+cp /private/etc/apt/sileobackup/sileo.sources /private/etc/apt/sources.list.d/sileo.sources
+rm -f /etc/apt/sources.list.d/cydia.list' > /private/etc/rc.d/restoresileo
+chmod 0777 /private/etc/rc.d/restoresileo
 
-/usr/bin/apt-get update
+#Cleanup
+echo Cleaning Up...
 
-echo All done!
+rm -rf ./sileo/
+rm -rf ./sileo_old.deb
+rm -rf ./sileo.deb
+rm -rf ./install
+rm -rf ./apt7-lib.deb
+rm -rf ./apt7-key.deb
+rm -rf ./apt7.deb
+rm -rf ./aptlib
+rm -rf ./aptkey
+rm -rf ./apt
+rm -rf ./aptlib.deb
+rm -rf ./aptkey.deb
+rm -rf ./apt.deb
+rm -rf ./apt1.4_placeholder.deb
+rm -rf ./libapt_placeholder.deb
+rm -f ./ent.xml
+
+#Fix Sileo Permissions
+chown root:admin /Applications/Sileo.app/giveMeRoot
+chmod 4755 /Applications/Sileo.app/giveMeRoot
+
+apt-get update
+
+echo Done! Run \"backupsileo\" in terminal everytime you add a new source to Sileo, or it will be deleted on reboot!
