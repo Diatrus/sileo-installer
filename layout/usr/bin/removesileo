@@ -91,7 +91,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>
 </dict>
 </plist>' >> ./ent.xml
 sed -i 's/sources\.cydiad/sources\.list\.d/g' /Applications/Cydia.app/Cydia
-if ! [ -s /etc/apt/sources.cydiad/cydia.list ]; then
+if [ -s /etc/apt/sources.cydiad/cydia.list ]; then
 	ln -s /var/mobile/Library/Caches/com.saurik.Cydia/sources.list /etc/apt/sources.list.d/cydia.list
 fi
 rm -rf /etc/apt/sources.cydiad/
