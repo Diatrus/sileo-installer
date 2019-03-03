@@ -1,17 +1,19 @@
 #!/bin/bash
-cd /tmp/
 
 if [[ $(/usr/bin/id -u) -ne 0 ]]; then
     echo "Run this as root!"
     exit
 fi
 
-/bin/rm -rf ./libapt-pkg5.0.deb
-/bin/rm -rf ./libapt.deb
-/bin/rm -rf ./apt-key.deb
-/bin/rm -rf ./apt1.4.deb
+#Remove old leftovers if any
+rm -rf /tmp/sileo
+mkdir /tmp/sileo
+cd /tmp/sileo
+
 
 curl --silent -o ./BingnerPackages https://apt.bingner.com/dists/ios/1443.00/main/binary-iphoneos-arm/Packages
+
+sleep 1
 
 touch ./libapt5package
 awk '/^Package: libapt-pkg5.0$/ {s=NR;next} s && NR<=s+15' ./BingnerPackages &> libapt5package
@@ -41,6 +43,7 @@ rm -f ./aptkeypackage
 
 rm -f ./BingnerPackages
 
+sleep 1
 
 echo Downloading unc0ver apt...
 
@@ -88,10 +91,10 @@ echo '<?xml version="1.0" encoding="UTF-8"?>
 </dict>
 </plist>' >> ./ent.xml
 sed -i 's/sources\.cydiad/sources\.list\.d/g' /Applications/Cydia.app/Cydia
-rm -rf /etc/apt/sources.cydiad/
 if ! [ -s /etc/apt/sources.cydiad/cydia.list ]; then
 	ln -s /var/mobile/Library/Caches/com.saurik.Cydia/sources.list /etc/apt/sources.list.d/cydia.list
 fi
+rm -rf /etc/apt/sources.cydiad/
 chown 501:501 /Applications/Cydia.app/Cydia
 ldid -S./ent.xml /Applications/Cydia.app/Cydia
 chown 0:0 /Applications/Cydia.app/Cydia
@@ -100,10 +103,8 @@ rm -f ./ent.xml
 echo Cleaning up...
 
 uicache
-/bin/rm -rf ./libapt-pkg5.0_1.4.8-4_iphoneos-arm.deb
-/bin/rm -rf ./libapt_1.4.8-7_iphoneos-arm.deb
-/bin/rm -rf ./apt-key_1.4.8-3_iphoneos-arm.deb
-/bin/rm -rf ./apt1.4_1.4.8-3_iphoneos-arm.deb
+rm -rf /tmp/sileo
+
 /bin/rm -f /etc/apt/sources.list.d/sileo.sources
 /usr/bin/apt-get update
 

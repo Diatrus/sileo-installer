@@ -1,5 +1,4 @@
 #!/bin/bash
-cd /tmp/
 
 if [[ $(/usr/bin/id -u) -ne 0 ]]; then
     echo "Run this as root!"
@@ -7,29 +6,18 @@ if [[ $(/usr/bin/id -u) -ne 0 ]]; then
 fi
 
 #Remove old leftovers if any
-rm -rf ./sileo/
-rm -rf ./sileo_old.deb
-rm -rf ./sileo.deb
-rm -rf ./install
-rm -rf ./apt7-lib.deb
-rm -rf ./apt7-key.deb
-rm -rf ./apt7.deb
-rm -rf ./aptlib
-rm -rf ./aptkey
-rm -rf ./apt
-rm -rf ./aptlib.deb
-rm -rf ./aptkey.deb
-rm -rf ./apt.deb
-rm -rf ./apt1.4_placeholder.deb
-rm -rf ./libapt_placeholder.deb
-rm -f ./ent.xml
+rm -rf /tmp/sileo
+mkdir /tmp/sileo
+cd /tmp/sileo
 
 #Make sure electrarepo isn't blocked
 sed -i '/electrarepo/d' /etc/hosts
 
-#Find required packages URL and versions
+sleep 2
 
+#Find required packages URL and versions
 curl --silent -o ./ElectraPackages https://electrarepo64.coolstar.org/Packages
+sleep 1
 
 touch ./sileopackage
 awk '/^Package: org.coolstar.sileo$/ {s=NR;next} s && NR<=s+15' ./ElectraPackages &> sileopackage
@@ -193,7 +181,6 @@ Author: Sileo Team <getsileoapp@gmail.com>
 echo '#!/bin/bash
 rm /etc/apt/sources.list.d/sileo.sources 2> /dev/null || true
 rm /etc/apt/sources.list.d/sileo.list 2> /dev/null || true
-mkdir -p /etc/apt/sileobackup/
 touch /var/mobile/Library/Caches/sileo.sources
 
 if ! [ -s /var/mobile/Library/Caches/sileo.sources ]; then
@@ -222,11 +209,6 @@ if ! grep -Fxq "URIs: https://apt.bingner.com/" /var/mobile/Library/Caches/sileo
 then
 	echo "Installed unc0ver Repo"
 	sed -i '\''1s;^;Types: deb\nURIs: https://apt.bingner.com/\nSuites: ./\nComponents:\n\n;'\'' /var/mobile/Library/Caches/sileo.sources
-fi
-if ! grep -Fxq "URIs: https://repo.nepeta.me/" /var/mobile/Library/Caches/sileo.sources ;
-then
-	echo "Installed Nepeta'\''s Repo"
-	sed -i '\''1s;^;Types: deb\nURIs: https://repo.nepeta.me/\nSuites: ./\nComponents:\n\n;'\'' /var/mobile/Library/Caches/sileo.sources
 fi
 if ! grep -Fxq "URIs: https://diatrus.github.io/sileo/" /var/mobile/Library/Caches/sileo.sources ;
 then
@@ -303,22 +285,7 @@ chmod 0777 /private/etc/rc.d/restoresileo
 #Cleanup
 echo Cleaning Up...
 
-rm -rf ./sileo/
-rm -rf ./sileo_old.deb
-rm -rf ./sileo.deb
-rm -rf ./install
-rm -rf ./apt7-lib.deb
-rm -rf ./apt7-key.deb
-rm -rf ./apt7.deb
-rm -rf ./aptlib
-rm -rf ./aptkey
-rm -rf ./apt
-rm -rf ./aptlib.deb
-rm -rf ./aptkey.deb
-rm -rf ./apt.deb
-rm -rf ./apt1.4_placeholder.deb
-rm -rf ./libapt_placeholder.deb
-rm -f ./ent.xml
+rm -rf /tmp/sileo
 
 #Fix Sileo Permissions
 chown root:admin /Applications/Sileo.app/giveMeRoot
