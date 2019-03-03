@@ -326,4 +326,4 @@ chmod 4755 /Applications/Sileo.app/giveMeRoot
 
 apt-get update
 
-echo Done! Run \"backupsileo\" in terminal everytime you add a new source to Sileo, or it will be deleted on reboot!
+echo Done!
