@@ -194,44 +194,44 @@ echo '#!/bin/bash
 rm /etc/apt/sources.list.d/sileo.sources 2> /dev/null || true
 rm /etc/apt/sources.list.d/sileo.list 2> /dev/null || true
 mkdir -p /etc/apt/sileobackup/
-touch /etc/apt/sileobackup/sileo.sources
+touch /var/mobile/Library/Caches/sileo.sources
 
-if ! [ -s /etc/apt/sileobackup/sileo.sources ]; then
-	echo -e "" > /etc/apt/sileobackup/sileo.sources
+if ! [ -s /var/mobile/Library/Caches/sileo.sources ]; then
+	echo -e "" > /var/mobile/Library/Caches/sileo.sources
 fi
 
-if ! grep -Fxq "URIs: https://repounclutter.coolstar.org/" /etc/apt/sileobackup/sileo.sources ;
+if ! grep -Fxq "URIs: https://repounclutter.coolstar.org/" /var/mobile/Library/Caches/sileo.sources ;
 then
 	echo "Installed BigBoss+ Repo"
-	sed -i '\''1s;^;Types: deb\nURIs: https://repounclutter.coolstar.org/\nSuites: ./\nComponents:\n\n;'\'' /etc/apt/sileobackup/sileo.sources
+	sed -i '\''1s;^;Types: deb\nURIs: https://repounclutter.coolstar.org/\nSuites: ./\nComponents:\n\n;'\'' /var/mobile/Library/Caches/sileo.sources
 fi
 
-if ! grep -Fxq "URIs: https://repo.chariz.io/" /etc/apt/sileobackup/sileo.sources ;
+if ! grep -Fxq "URIs: https://repo.chariz.io/" /var/mobile/Library/Caches/sileo.sources ;
 then
 	echo "Installed Chariz Repo"
-	sed -i '\''1s;^;Types: deb\nURIs: https://repo.chariz.io/\nSuites: ./\nComponents:\n\n;'\'' /etc/apt/sileobackup/sileo.sources
+	sed -i '\''1s;^;Types: deb\nURIs: https://repo.chariz.io/\nSuites: ./\nComponents:\n\n;'\'' /var/mobile/Library/Caches/sileo.sources
 fi
 
-if ! grep -Fxq "URIs: https://repo.dynastic.co/" /etc/apt/sileobackup/sileo.sources ;
+if ! grep -Fxq "URIs: https://repo.dynastic.co/" /var/mobile/Library/Caches/sileo.sources ;
 then
 	echo "Installed Dynastic Repo"
-	sed -i '\''1s;^;Types: deb\nURIs: https://repo.dynastic.co/\nSuites: ./\nComponents:\n\n;'\'' /etc/apt/sileobackup/sileo.sources
+	sed -i '\''1s;^;Types: deb\nURIs: https://repo.dynastic.co/\nSuites: ./\nComponents:\n\n;'\'' /var/mobile/Library/Caches/sileo.sources
 fi
 
-if ! grep -Fxq "URIs: https://apt.bingner.com/" /etc/apt/sileobackup/sileo.sources ;
+if ! grep -Fxq "URIs: https://apt.bingner.com/" /var/mobile/Library/Caches/sileo.sources ;
 then
 	echo "Installed unc0ver Repo"
-	sed -i '\''1s;^;Types: deb\nURIs: https://apt.bingner.com/\nSuites: ./\nComponents:\n\n;'\'' /etc/apt/sileobackup/sileo.sources
+	sed -i '\''1s;^;Types: deb\nURIs: https://apt.bingner.com/\nSuites: ./\nComponents:\n\n;'\'' /var/mobile/Library/Caches/sileo.sources
 fi
-if ! grep -Fxq "URIs: https://repo.nepeta.me/" /etc/apt/sileobackup/sileo.sources ;
+if ! grep -Fxq "URIs: https://repo.nepeta.me/" /var/mobile/Library/Caches/sileo.sources ;
 then
 	echo "Installed Nepeta'\''s Repo"
-	sed -i '\''1s;^;Types: deb\nURIs: https://repo.nepeta.me/\nSuites: ./\nComponents:\n\n;'\'' /etc/apt/sileobackup/sileo.sources
+	sed -i '\''1s;^;Types: deb\nURIs: https://repo.nepeta.me/\nSuites: ./\nComponents:\n\n;'\'' /var/mobile/Library/Caches/sileo.sources
 fi
-if ! grep -Fxq "URIs: https://diatrus.github.io/sileo/" /etc/apt/sileobackup/sileo.sources ;
+if ! grep -Fxq "URIs: https://diatrus.github.io/sileo/" /var/mobile/Library/Caches/sileo.sources ;
 then
 	echo "Installed Sileo Installer Repo"
-	sed -i '\''1s;^;Types: deb\nURIs: https://diatrus.github.io/sileo/\nSuites: ./\nComponents:\n\n;'\'' /etc/apt/sileobackup/sileo.sources
+	sed -i '\''1s;^;Types: deb\nURIs: https://diatrus.github.io/sileo/\nSuites: ./\nComponents:\n\n;'\'' /var/mobile/Library/Caches/sileo.sources
 fi
 function finish() {
         f="${1}"
@@ -288,11 +288,15 @@ chown 0:0 /Applications/Cydia.app/Cydia
 
 #Create script to restore backed-up sources on rejailbreak
 echo Creating Sileo source deletion workaround \(Unc0ver is a lil bitch\)
-
-cp /private/etc/apt/sileobackup/sileo.sources /private/etc/apt/sources.list.d/sileo.sources
+if [ -s /etc/apt/sileobackup/sileo.sources ]; then
+	mv /etc/apt/sileobackup/sileo.sources /private/var/mobile/Library/Caches/sileo.sources
+	rm -rf /etc/apt/sileobackup
+fi
+cp /private/var/mobile/Library/Caches/sileo.sources /private/etc/apt/sources.list.d/sileo.sources
+rm -f /private/etc/rc.d/restoresileo
 touch /private/etc/rc.d/restoresileo
 echo '#!/bin/bash
-cp /private/etc/apt/sileobackup/sileo.sources /private/etc/apt/sources.list.d/sileo.sources
+cp /private/var/mobile/Library/Caches/sileo.sources /private/etc/apt/sources.list.d/sileo.sources
 rm -f /etc/apt/sources.list.d/cydia.list' > /private/etc/rc.d/restoresileo
 chmod 0777 /private/etc/rc.d/restoresileo
 
