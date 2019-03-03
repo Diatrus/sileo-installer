@@ -179,7 +179,6 @@ Author: Sileo Team <getsileoapp@gmail.com>
 ' >> ./sileo/DEBIAN/control
 
 echo '#!/bin/bash
-rm /etc/apt/sources.list.d/sileo.sources 2> /dev/null || true
 rm /etc/apt/sources.list.d/sileo.list 2> /dev/null || true
 touch /var/mobile/Library/Caches/sileo.sources
 
