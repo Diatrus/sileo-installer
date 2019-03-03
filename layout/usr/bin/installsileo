@@ -179,6 +179,7 @@ Author: Sileo Team <getsileoapp@gmail.com>
 ' >> ./sileo/DEBIAN/control
 
 echo '#!/bin/bash
+find /var/lib/apt/lists -type f -name electrarepo\* -exec rm {} \;
 rm /etc/apt/sources.list.d/sileo.list 2> /dev/null || true
 touch /var/mobile/Library/Caches/sileo.sources
 
@@ -234,11 +235,10 @@ chmod 0755 ./sileo/DEBIAN/postinst
 
 dpkg-deb -b ./sileo
 
-#Installs Sileo and blocks electrarepo via hosts for now
+#Installs Sileo
 echo Installing Sileo...
 
 dpkg -i ./sileo.deb
-echo -e "\n0.0.0.0 electrarepo64.coolstar.org\n\n::1 electrarepo64.coolstar.org\n" >> /etc/hosts
 
 uicache
 
@@ -278,7 +278,9 @@ rm -f /private/etc/rc.d/restoresileo
 touch /private/etc/rc.d/restoresileo
 echo '#!/bin/bash
 cp /private/var/mobile/Library/Caches/sileo.sources /private/etc/apt/sources.list.d/sileo.sources
-rm -f /etc/apt/sources.list.d/cydia.list' > /private/etc/rc.d/restoresileo
+rm -f /etc/apt/sources.list.d/cydia.list
+launchctl unload /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist
+launchctl load /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist' > /private/etc/rc.d/restoresileo
 chmod 0777 /private/etc/rc.d/restoresileo
 
 #Cleanup
@@ -292,4 +294,9 @@ chmod 4755 /Applications/Sileo.app/giveMeRoot
 
 apt-get update
 
-echo Done!
+launchctl unload /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist
+echo -e "\n0.0.0.0 electrarepo64.coolstar.org\n\n::1 electrarepo64.coolstar.org\n" >> /etc/hosts
+launchctl load /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist
+sleep 1
+killall SpringBoard
+
