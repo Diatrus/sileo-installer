@@ -279,8 +279,7 @@ touch /private/etc/rc.d/restoresileo
 echo '#!/bin/bash
 cp /private/var/mobile/Library/Caches/sileo.sources /private/etc/apt/sources.list.d/sileo.sources
 rm -f /etc/apt/sources.list.d/cydia.list
-launchctl unload /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist
-launchctl load /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist' > /private/etc/rc.d/restoresileo
+find /var/lib/apt/lists -type f -name electrarepo\* -exec rm {} \;' > /private/etc/rc.d/restoresileo
 chmod 0777 /private/etc/rc.d/restoresileo
 
 #Cleanup
