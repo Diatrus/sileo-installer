@@ -108,4 +108,6 @@ rm -rf /tmp/sileo
 /bin/rm -f /etc/apt/sources.list.d/sileo.sources
 /usr/bin/apt-get update
 
-echo All done!
+echo Done!
+sleep 2
+killall SpringBoard

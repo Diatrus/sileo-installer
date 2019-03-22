@@ -262,7 +262,7 @@ mkdir -p /etc/apt/sources.cydiad/
 if ! [ -s /etc/apt/sources.cydiad/cydia.list ]; then
 	ln -s /var/mobile/Library/Caches/com.saurik.Cydia/sources.list /etc/apt/sources.cydiad/cydia.list
 fi
-rm -f /etc/apt/sources.list.d/cydia.list
+rm -f /private/etc/apt/sources.list.d/cydia.list
 chown 501:501 /Applications/Cydia.app/Cydia
 ldid -S./ent.xml /Applications/Cydia.app/Cydia
 chown 0:0 /Applications/Cydia.app/Cydia
@@ -278,8 +278,9 @@ rm -f /private/etc/rc.d/restoresileo
 touch /private/etc/rc.d/restoresileo
 echo '#!/bin/bash
 cp /private/var/mobile/Library/Caches/sileo.sources /private/etc/apt/sources.list.d/sileo.sources
-rm -f /etc/apt/sources.list.d/cydia.list
-find /var/lib/apt/lists -type f -name electrarepo\* -exec rm {} \;' > /private/etc/rc.d/restoresileo
+rm -f /private/etc/apt/sources.list.d/cydia.list
+find /var/lib/apt/lists -type f -name electrarepo\* -exec rm {} \;
+killall -9 mDNSResponder; killall -9 mDNSResponderHelper' > /private/etc/rc.d/restoresileo
 chmod 0777 /private/etc/rc.d/restoresileo
 
 #Cleanup
@@ -293,9 +294,9 @@ chmod 4755 /Applications/Sileo.app/giveMeRoot
 
 apt-get update
 
-launchctl unload /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist
 echo -e "\n0.0.0.0 electrarepo64.coolstar.org\n\n::1 electrarepo64.coolstar.org\n" >> /etc/hosts
-launchctl load /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist
-sleep 1
+killall -9 mDNSResponder; killall -9 mDNSResponderHelper
+echo Done!
+sleep 2
 killall SpringBoard
 
