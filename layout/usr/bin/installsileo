@@ -28,7 +28,7 @@ SILEOURL_NO_WHITESPACE="$(echo -e "${SILEOURL}" | tr -d '[:space:]')"
 rm -f ./sileopackage
 
 touch ./apt7package
-awk '/^Package: apt7$/ {s=NR;next} s && NR<=s+15' ./ElectraPackages &> apt7package
+awk '/^Package: apt$/ {s=NR;next} s && NR<=s+15' ./ElectraPackages &> apt7package
 APT7VERSION=$(awk -F'Version:' '{print $2}' apt7package)
 APT7URL=https://electrarepo64.coolstar.org/$(awk -F'Filename:' '{print $2}' apt7package)
 APT7VERSION_NO_WHITESPACE="$(echo -e "${APT7VERSION}" | tr -d '[:space:]')"
@@ -36,7 +36,7 @@ APT7URL_NO_WHITESPACE="$(echo -e "${APT7URL}" | tr -d '[:space:]')"
 rm -f ./apt7package
 
 touch ./apt7libpackage
-awk '/^Package: apt7-lib$/ {s=NR;next} s && NR<=s+15' ./ElectraPackages &> apt7libpackage
+awk '/^Package: apt-lib$/ {s=NR;next} s && NR<=s+15' ./ElectraPackages &> apt7libpackage
 APT7LIBVERSION=$(awk -F'Version:' '{print $2}' apt7libpackage)
 APT7LIBURL=https://electrarepo64.coolstar.org/$(awk -F'Filename:' '{print $2}' apt7libpackage)
 APT7LIBVERSION_NO_WHITESPACE="$(echo -e "${APT7LIBVERSION}" | tr -d '[:space:]')"
@@ -44,7 +44,7 @@ APT7LIBURL_NO_WHITESPACE="$(echo -e "${APT7LIBURL}" | tr -d '[:space:]')"
 rm -f ./apt7libpackage
 
 touch ./apt7keypackage
-awk '/^Package: apt7-key$/ {s=NR;next} s && NR<=s+15' ./ElectraPackages &> apt7keypackage
+awk '/^Package: apt-key$/ {s=NR;next} s && NR<=s+15' ./ElectraPackages &> apt7keypackage
 APT7KEYVERSION=$(awk -F'Version:' '{print $2}' apt7keypackage)
 APT7KEYURL=https://electrarepo64.coolstar.org/$(awk -F'Filename:' '{print $2}' apt7keypackage)
 APT7KEYVERSION_NO_WHITESPACE="$(echo -e "${APT7KEYVERSION}" | tr -d '[:space:]')"
@@ -80,7 +80,7 @@ rm -f ./aptkey/DEBIAN/control
 rm -f ./apt/DEBIAN/control
 
 #Adds modified control files
-echo 'Package: apt7-lib
+echo 'Package: apt-lib
 Version: 1:'$APT7LIBVERSION_NO_WHITESPACE'
 Architecture: iphoneos-arm
 Essential: yes
@@ -89,38 +89,36 @@ Pre-Depends: dpkg (>= 1.14.25-8)
 Depends: bzip2, dpkg (>= 1.14.25-9), gnupg, gzip, lzma, cy+cpu.arm64
 Conflicts: apt7-ssl, libapt-pkg5.0, libapt-pkg-dev
 Breaks: cydia (<< 1.1.10), apt7 (<< 0.7.25.3-7), aptitude (<< 0.4.11.11-6)
-Replaces: libapt-pkg5.0, apt (<< 1:0-1), apt7 (<< 0.7.20.2-3), apt7-ssl, libapt-pkg-dev
-Provides: apt7-ssl, libapt-pkg (=1.4.8)
+Replaces: libapt-pkg5.0, apt7-lib, apt7-ssl, libapt-pkg-dev
+Provides: apt7-ssl, apt7-lib (= 1.7.4), libapt-pkg (=1.4.8)
 Section: Packaging
 Priority: required
 Description: the advanced packaging library from Debian
 Name: APT 1.7 Strict (lib)
 ' >> ./aptlib/DEBIAN/control
 
-echo 'Package: apt7-key
+echo 'Package: apt-key
 Version: 1:'$APT7KEYVERSION_NO_WHITESPACE'
 Architecture: iphoneos-arm
 Maintainer: Diatrus
 Pre-Depends: dpkg (>= 1.14.25-8)
-Depends: apt7-lib (>= 1.7.0), cy+cpu.arm64
-Conflicts: apt-key
-Replaces: apt (<< 1:0-1), apt7 (<< 0.7.20.2-4), apt-key
-Provides: apt-key
+Depends: apt-lib (>= 1.7.4), cy+cpu.arm64
+Replaces: apt7-key
+Provides: apt7-key (= 1.7.4)
 Section: Packaging
 Priority: standard
 Description: repository encryption key management tool
 Name: APT 1.7 (apt-key)
 ' >> ./aptkey/DEBIAN/control
 
-echo 'Package: apt7
+echo 'Package: apt
 Version: 1:'$APT7VERSION_NO_WHITESPACE'
 Architecture: iphoneos-arm
 Maintainer: Diatrus
 Pre-Depends: dpkg (>= 1.14.25-8)
-Depends: apt7-key, apt7-lib (>= 1.7.0), berkeleydb, cy+cpu.arm64
-Conflicts: apt
-Replaces: apt
-Provides: apt
+Depends: apt-key, apt-lib (>= 1.7.4), berkeleydb, cy+cpu.arm64
+Replaces: apt7
+Provides: apt7 (= 1.7.4)
 Section: Packaging
 Priority: standard
 Description: the advanced packaging tool from Debian
@@ -210,10 +208,10 @@ then
 	echo "Installed unc0ver Repo"
 	sed -i '\''1s;^;Types: deb\nURIs: https://apt.bingner.com/\nSuites: ./\nComponents:\n\n;'\'' /var/mobile/Library/Caches/sileo.sources
 fi
-if ! grep -Fxq "URIs: https://diatrus.github.io/sileo/" /var/mobile/Library/Caches/sileo.sources ;
+if ! grep -Fxq "URIs: https://diatr.us/sileo/" /var/mobile/Library/Caches/sileo.sources ;
 then
 	echo "Installed Sileo Installer Repo"
-	sed -i '\''1s;^;Types: deb\nURIs: https://diatrus.github.io/sileo/\nSuites: ./\nComponents:\n\n;'\'' /var/mobile/Library/Caches/sileo.sources
+	sed -i '\''1s;^;Types: deb\nURIs: https://diatr.us/sileo/\nSuites: ./\nComponents:\n\n;'\'' /var/mobile/Library/Caches/sileo.sources
 fi
 function finish() {
         f="${1}"
