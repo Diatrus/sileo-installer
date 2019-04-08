@@ -177,7 +177,6 @@ Author: Sileo Team <getsileoapp@gmail.com>
 ' >> ./sileo/DEBIAN/control
 
 echo '#!/bin/bash
-find /var/lib/apt/lists -type f -name electrarepo\* -exec rm {} \;
 rm /etc/apt/sources.list.d/sileo.list 2> /dev/null || true
 touch /var/mobile/Library/Caches/sileo.sources
 
@@ -276,9 +275,7 @@ rm -f /private/etc/rc.d/restoresileo
 touch /private/etc/rc.d/restoresileo
 echo '#!/bin/bash
 cp /private/var/mobile/Library/Caches/sileo.sources /private/etc/apt/sources.list.d/sileo.sources
-rm -f /private/etc/apt/sources.list.d/cydia.list
-find /var/lib/apt/lists -type f -name electrarepo\* -exec rm {} \;
-killall -9 mDNSResponder; killall -9 mDNSResponderHelper' > /private/etc/rc.d/restoresileo
+rm -f /private/etc/apt/sources.list.d/cydia.list' > /private/etc/rc.d/restoresileo
 chmod 0777 /private/etc/rc.d/restoresileo
 
 #Cleanup
@@ -292,8 +289,6 @@ chmod 4755 /Applications/Sileo.app/giveMeRoot
 
 apt-get update
 
-echo -e "\n0.0.0.0 electrarepo64.coolstar.org\n\n::1 electrarepo64.coolstar.org\n" >> /etc/hosts
-killall -9 mDNSResponder; killall -9 mDNSResponderHelper
 echo Done!
 sleep 2
 killall SpringBoard

@@ -1,7 +1,0 @@
-{
-    Filter =     {
-        Bundles =         (
-            "org.coolstar.SileoStore"
-        );
-    };
-}
