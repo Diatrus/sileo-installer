@@ -63,7 +63,7 @@ echo Removing Electra apt and Sileo...
 /usr/bin/dpkg --purge --force-all apt-lib
 /usr/bin/dpkg --purge --force-all apt
 /usr/bin/dpkg --purge --force-all apt-key
-/usr/bin/dpkg --purge --force-all org.juulstar.Sileo
+/usr/bin/dpkg --purge --force-all org.coolstar.Sileo
 sed -i '/electrarepo64/d' /etc/hosts
 rm -f /etc/rc.d/restoresileo
 rm -rf /etc/apt/sileobackup
