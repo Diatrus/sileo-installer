@@ -162,7 +162,7 @@ dpkg-deb -R ./sileo_old.deb ./sileo/
 rm -f ./sileo/DEBIAN/control
 rm -f ./sileo/DEBIAN/postinst
 
-echo 'Package: org.juulstar.sileo
+echo 'Package: org.coolstar.sileo
 Section: Packaging
 Maintainer: Diatrus
 Architecture: iphoneos-arm
